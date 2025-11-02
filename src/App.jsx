@@ -6,6 +6,7 @@ import BoatInfo from './components/BoatInfo'
 import ActiveSession from './components/ActiveSession'
 import AdminPanel from './components/AdminPanel'
 import Maintenance from './components/Maintenance'
+import { supabase } from './lib/supabase'
 
 const USERS_KEY = 'awt_users_v1'
 const SESSIONS_KEY = 'awt_sessions_v1'
@@ -57,10 +58,18 @@ export default function App() {
     setStep(next)
   }
 
-  function registerUser({ username, password }) {
+  async function registerUser({ username, password }) {
     if (users.find(u => u.username === username)) return { ok: false, message: 'Username exists' }
     const u = { username, password, approved: true, isAdmin: false }
     setUsers(prev => [...prev, u])
+
+    // schrijf ook centraal naar Supabase (tabel: app_users)
+    try {
+      await supabase.from('app_users').upsert({ username })
+    } catch (err) {
+      console.warn('Supabase upsert failed', err)
+    }
+
     return { ok: true }
   }
 
@@ -77,8 +86,25 @@ export default function App() {
     setStep('login')
   }
 
-  function saveSession(record) {
+  async function saveSession(record) {
+    // lokaal
     setSessions(prev => [record, ...prev])
+
+    // centraal in Supabase (work_sessions)
+    try {
+      await supabase.from('work_sessions').insert({
+        username: currentUser?.username,
+        function: record.function,
+        machine: record.machine,
+        boat: record.boat,
+        hold: record.hold,
+        start: record.start,
+        end: record.end,
+        duration_ms: record.duration_ms
+      })
+    } catch (err) {
+      console.warn('Supabase insert failed', err)
+    }
   }
 
   function saveMaintenance(record) {
