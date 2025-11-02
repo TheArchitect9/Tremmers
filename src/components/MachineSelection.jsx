@@ -3,7 +3,7 @@ import { getFunctionLabel } from '../utils/functionLabels'
 
 const machineSets = {
   'tremmer-1': ['140', '141', '142', '146'],
-  'tremmer-2': ['331', '332'],
+  'tremmer-2': ['341', '342'],
   'tremmer-3': ['Single']
 }
 
