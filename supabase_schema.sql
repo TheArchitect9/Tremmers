@@ -1,13 +1,17 @@
 -- Supabase schema for Alpha Work Tracker
 
 -- Profiles table links to auth.users (created by Supabase Auth)
+-- NOTE: changed default for `approved` to true so accounts are usable immediately after signup.
 create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   username text,
-  approved boolean default false,
+  approved boolean default true,
   is_admin boolean default false,
   created_at timestamptz default now()
 );
+
+-- If you already have profiles, run this update to set them to approved
+-- UPDATE profiles SET approved = true WHERE approved IS DISTINCT FROM true;
 
 -- Sessions (work records)
 create table if not exists sessions (

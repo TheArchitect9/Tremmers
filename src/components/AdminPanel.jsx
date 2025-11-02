@@ -1,8 +1,8 @@
 import React from 'react'
 import { getFunctionLabel } from '../utils/functionLabels'
 
-export default function AdminPanel({ users = [], sessions = [], maintenance = [], onBack = () => {}, onApproveUser = () => {} }) {
-  const pending = users.filter(u => !u.approved)
+export default function AdminPanel({ users = [], sessions = [], maintenance = [], onBack = () => {} }) {
+  // The app now auto-approves new accounts; pending approvals removed.
 
   return (
     <div className="max-w-7xl mx-auto mt-8 flex gap-6">
@@ -19,22 +19,6 @@ export default function AdminPanel({ users = [], sessions = [], maintenance = []
           <h3 className="text-xl font-bold">Admin Dashboard</h3>
           <button onClick={onBack} className="text-sm text-blue-600">Back</button>
         </div>
-
-        <section className="mb-6">
-          <h4 className="font-semibold mb-2">Pending accounts</h4>
-          {pending.length === 0 ? (
-            <div className="text-sm text-gray-500">No pending accounts</div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {pending.map(u => (
-                <div key={u.username} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                  <div>{u.username}</div>
-                  <div><button onClick={() => onApproveUser(u.username)} className="text-sm bg-blue-600 text-white px-3 py-1 rounded">Approve</button></div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
 
         <section className="mb-6">
           <h4 className="font-semibold mb-2">Work Records</h4>

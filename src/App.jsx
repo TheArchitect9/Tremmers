@@ -59,7 +59,7 @@ export default function App() {
 
   function registerUser({ username, password }) {
     if (users.find(u => u.username === username)) return { ok: false, message: 'Username exists' }
-    const u = { username, password, approved: false, isAdmin: false }
+    const u = { username, password, approved: true, isAdmin: false }
     setUsers(prev => [...prev, u])
     return { ok: true }
   }
@@ -67,7 +67,7 @@ export default function App() {
   function loginUser({ username, password }) {
     const u = users.find(x => x.username === username && x.password === password)
     if (!u) return { ok: false, message: 'Invalid credentials' }
-    if (!u.approved) return { ok: false, message: 'Account pending approval' }
+    
     setCurrentUser(u)
     return { ok: true, user: u }
   }
@@ -75,10 +75,6 @@ export default function App() {
   function logout() {
     setCurrentUser(null)
     setStep('login')
-  }
-
-  function approveUser(username) {
-    setUsers(prev => prev.map(u => u.username === username ? { ...u, approved: true } : u))
   }
 
   function saveSession(record) {
@@ -166,7 +162,6 @@ export default function App() {
           sessions={sessions}
           maintenance={maintenanceLogs}
           onBack={() => go('function')}
-          onApproveUser={(username) => approveUser(username)}
         />
       )}
     </div>
