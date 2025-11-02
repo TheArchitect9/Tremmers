@@ -14,7 +14,7 @@ export default function Login({ onLogin = () => {}, onRegister = () => {} }) {
   async function handleRegister() {
     const res = await onRegister({ username, password })
     if (!res.ok) setMessage(res.message || 'Registration failed')
-    else setMessage('Registered — waiting for admin approval')
+    else setMessage('Registration successful')
   }
 
   return (
