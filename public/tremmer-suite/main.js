@@ -1,6 +1,24 @@
 // ---- Simple data layer (localStorage) ----
 const LS_KEY = "tremmer-suite-v1";
+const deepClone = (o) => JSON.parse(JSON.stringify(o)); // veilige clone
 
+// ... demoData blijft gelijk ...
+
+function load(){
+  const raw = localStorage.getItem(LS_KEY);
+  if(!raw){
+    localStorage.setItem(LS_KEY, JSON.stringify(demoData));
+    return deepClone(demoData);
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    localStorage.setItem(LS_KEY, JSON.stringify(demoData));
+    return deepClone(demoData);
+  }
+}
+function save(state){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+if(!Array.isArray(state.tasks)) state.tasks = [];
 const demoData = {
   settings: {
     startDate: iso(addDays(new Date(), -30)),

@@ -189,18 +189,46 @@ export default function App() {
           maintenance={maintenanceLogs}
           onBack={() => go('function')}
         />
-      )}
-    </div>
-  )
-}
-// src/App.jsx
-export default function App() {
-  return (
-    <div>
-      {/* ...jouw bestaande UI... */}
-      <button onClick={() => window.location.href = '/tremmer-suite/'}>
-        Open Tremmer Suite
-      </button>
-    </div>
-  );
-}
+
+      )}{/* tijdelijk testen: zonder currentUser check */}
+  <button
+    type="button"
+    style={{
+      position: 'fixed',
+      bottom: '20px',
+      right: '20px',
+      padding: '12px 18px',
+      background: '#0672ff',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '14px'
+    }}
+    onClick={() => { window.location.href = '/tremmer-suite/index.html'; }}
+  >
+    Open Tremmer Suite
+  </button>
+</div>
+ );
+ }
+{currentUser && step !== 'login' && (
+  <button
+    type="button"
+    style={{
+      position: 'fixed',
+      bottom: '20px',
+      right: '20px',
+      padding: '12px 18px',
+      background: '#0672ff',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '14px'
+    }}
+    onClick={() => { window.location.href = '/tremmer-suite/'; }}
+  >
+    Open Tremmer Suite
+  </button>
+)}
