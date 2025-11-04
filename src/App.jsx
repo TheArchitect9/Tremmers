@@ -193,3 +193,14 @@ export default function App() {
     </div>
   )
 }
+// src/App.jsx
+export default function App() {
+  return (
+    <div>
+      {/* ...jouw bestaande UI... */}
+      <button onClick={() => window.location.href = '/tremmer-suite/'}>
+        Open Tremmer Suite
+      </button>
+    </div>
+  );
+}
