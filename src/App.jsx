@@ -141,7 +141,28 @@ export default function App() {
             <button className="text-sm" onClick={() => go('maintenance')}>Maintenance</button>
             {isAdmin && <button className="text-sm" onClick={() => go('admin')}>Admin</button>}
             <button className="text-sm text-red-600" onClick={logout}>Logout</button>
+          
           </div>
+          {currentUser && step !== 'login' && (
+  <button
+    type="button"
+    style={{
+      position: 'fixed',
+      bottom: '20px',
+      right: '20px',
+      padding: '12px 18px',
+      background: '#0672ff',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      fontSize: '14px'
+    }}
+    onClick={() => { window.location.href = '/tremmer-suite/index.html'; }}
+  >
+    Open Tremmer Suite
+  </button>
+)}
         </div>
       )}
 
