@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npm run copy-tremmer-suite",
-    "preview": "vite preview",
-    "copy-tremmer-suite": "cpx \"public/tremmer-suite/**/*\" dist/tremmer-suite"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
@@ -16,7 +15,6 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
-    "cpx": "^1.5.0",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.4.7",
     "vite": "^5.0.0"
