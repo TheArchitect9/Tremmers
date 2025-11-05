@@ -1,9 +1,25 @@
 import { useState, useEffect } from 'react';
 import './TremmerSuite.css';
 
+// Helper function to safely get data from localStorage
+const getLocalStorageData = (key, defaultValue) => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    console.error('Error reading from localStorage:', error);
+    return defaultValue;
+  }
+};
+
 const TremmerSuite = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [state, setState] = useState({
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedHold, setSelectedHold] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Initialize state with default values
+  const defaultState = {
     settings: {
       startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       months: 3,
@@ -17,9 +33,12 @@ const TremmerSuite = () => {
     },
     logs: [],
     handovers: []
-  });
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedHold, setSelectedHold] = useState(null);
+  };
+
+  // Single source of truth for state
+  const [state, setState] = useState(defaultState);
+  
+  // Form states
   const [formData, setFormData] = useState({
     student: '',
     task: '',
@@ -28,26 +47,37 @@ const TremmerSuite = () => {
     progress: 0,
     id: ''
   });
+  
   const [holdForm, setHoldForm] = useState({
     id: '',
     status: 'open',
     notes: ''
   });
+  
   const [handoverForm, setHandoverForm] = useState({
     prev: '',
     next: '',
     fileName: ''
   });
-  const [settings, setSettings] = useState({
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    months: 3,
-    green: 90,
-    amber: 60
-  });
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    const savedState = localStorage.getItem('tremmer-suite-v1');
+    try {
+      const savedState = getLocalStorageData('tremmer-suite-v1', defaultState);
+      setState(prevState => ({
+        ...defaultState,
+        ...savedState,
+        settings: {
+          ...defaultState.settings,
+          ...(savedState.settings || {})
+        }
+      }));
+    } catch (error) {
+      console.error('Failed to load state:', error);
+      setState(defaultState);
+    } finally {
+      setIsLoading(false);
+    }
     if (savedState) {
       setState(JSON.parse(savedState));
     }
@@ -627,6 +657,11 @@ const TremmerSuite = () => {
     logs: [],
     handovers: []
   };
+
+  // Show loading state while initializing
+  if (isLoading) {
+    return <div className="loading">Bezig met laden...</div>;
+  }
 
   return (
     <div className="tremmer-suite">
