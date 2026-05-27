@@ -8,17 +8,71 @@ function formatDuration(ms = 0, lang = 'nl') {
   return lang === 'en' ? `${hours}h ${minutes}m` : `${hours}u ${minutes}m`
 }
 
-function downloadCsv(rows) {
-  const header = ['user_id', 'function', 'machine', 'boat', 'hold', 'start', 'end', 'duration_ms']
-  const csv = [
-    header.join(','),
-    ...rows.map(row => header.map(key => `"${String(row[key] ?? '').replaceAll('"', '""')}"`).join(','))
+function formatCsvDate(value, lang) {
+  if (!value) return ''
+  return new Date(value).toLocaleString(lang === 'en' ? 'en-US' : 'nl-NL')
+}
+
+function csvCell(value) {
+  return `"${String(value ?? '').replaceAll('"', '""')}"`
+}
+
+function buildWorkbookCsv(rows, userMap, lang = 'nl') {
+  const header = lang === 'en'
+    ? ['Worker', 'User ID', 'Role', 'Machine', 'Vessel', 'Hold', 'Start', 'End', 'Duration (ms)', 'Duration (hours)', 'Status', 'Note']
+    : ['Medewerker', 'Gebruiker ID', 'Functie', 'Machine', 'Boot', 'Ruim', 'Start', 'Einde', 'Duur (ms)', 'Duur (uren)', 'Status', 'Opmerking']
+
+  const completed = lang === 'en' ? 'Completed' : 'Afgesloten'
+  const active = lang === 'en' ? 'Active' : 'Actief'
+  const rowsForExport = rows.map(row => {
+    const userId = row.user_id || row.user || ''
+    const durationMs = row.duration_ms || 0
+    return [
+      userMap[userId] || row.username || userId,
+      userId,
+      getFunctionLabel(row.function, lang),
+      row.machine || '',
+      row.boat || '',
+      row.hold || '',
+      formatCsvDate(row.start, lang),
+      formatCsvDate(row.end, lang),
+      durationMs || '',
+      durationMs ? (durationMs / 3600000).toFixed(2) : '',
+      row.end ? completed : active,
+      row.note || row.notes || ''
+    ]
+  })
+
+  return [
+    header.map(csvCell).join(','),
+    ...rowsForExport.map(row => row.map(csvCell).join(','))
   ].join('\n')
+}
+
+async function downloadCsv(rows, userMap, lang) {
+  const csv = `\uFEFF${buildWorkbookCsv(rows, userMap, lang)}`
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  const filename = 'AlphasWeb Tremmers Logins.csv'
+
+  if ('showSaveFilePicker' in window) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: 'CSV', accept: { 'text/csv': ['.csv'] } }]
+      })
+      const writable = await handle.createWritable()
+      await writable.write(blob)
+      await writable.close()
+      return
+    } catch (error) {
+      if (error?.name === 'AbortError') return
+    }
+  }
+
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `alpha-sessions-${new Date().toISOString().slice(0, 10)}.csv`
+  link.download = filename
   link.click()
   URL.revokeObjectURL(url)
 }
@@ -144,7 +198,7 @@ export default function AdminPanel({ sessions: localSessions = [], maintenance =
             </p>
           </div>
           <button
-            onClick={() => downloadCsv(sessions)}
+            onClick={() => downloadCsv(sessions, userMap, lang)}
             className="pill-button bg-slate-950 text-white hover:bg-slate-800"
           >
             {t.export}
