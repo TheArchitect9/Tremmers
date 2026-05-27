@@ -30,7 +30,8 @@ const copy = {
     logout: 'Log out',
     roleOwner: 'Owner',
     roleWorker: 'Worker',
-    langLabel: 'Nederlands'
+    langLabel: 'Nederlands',
+    invalidCredentials: 'Username or password is incorrect'
   }
 };
 
@@ -184,7 +185,7 @@ export default function App() {
     }
 
     const legacyUser = legacyUsers.find(u => u.username === loginName && u.password === password);
-    if (!legacyUser) return { ok: false, message: 'Gebruikersnaam of wachtwoord klopt niet' };
+    if (!legacyUser) return { ok: false, message: lang === 'en' ? t('invalidCredentials') : 'Gebruikersnaam of wachtwoord klopt niet' };
 
     setCurrentUser({ ...legacyUser, email: legacyUser.username, isLegacy: true });
     setProfile({ username: legacyUser.username, is_admin: Boolean(legacyUser.isAdmin) });
@@ -323,7 +324,7 @@ export default function App() {
                 />
                 <div className="min-w-0">
                   <h1 className="truncate text-base font-bold text-slate-950 sm:text-lg">Alpha Work Tracker</h1>
-                  <p className="truncate text-sm text-slate-500">{isOwner ? t('roleOwner') : t('roleWorker')} · {displayName}</p>
+                  <p className="truncate text-sm text-slate-500">{isOwner ? t('roleOwner') : t('roleWorker')} - {displayName}</p>
                 </div>
               </div>
               <nav className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end sm:gap-3">

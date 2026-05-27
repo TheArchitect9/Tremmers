@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 
-function formatDuration(ms = 0) {
+function formatDuration(ms = 0, lang = 'nl') {
   const hours = Math.floor(ms / 3600000)
   const minutes = Math.floor((ms % 3600000) / 60000)
-  return `${hours}u ${minutes}m`
+  return lang === 'en' ? `${hours}h ${minutes}m` : `${hours}u ${minutes}m`
 }
 
 function downloadCsv(rows) {
@@ -48,7 +48,9 @@ const copy = {
     boat: 'Boot',
     hold: 'Ruim',
     start: 'Start',
-    duration: 'Duur'
+    duration: 'Duur',
+    statusActive: 'Actief',
+    statusPaused: 'Gepauzeerd'
   },
   en: {
     back: 'Back to app',
@@ -75,7 +77,9 @@ const copy = {
     boat: 'Vessel',
     hold: 'Hold',
     start: 'Start',
-    duration: 'Duration'
+    duration: 'Duration',
+    statusActive: 'Active',
+    statusPaused: 'Paused'
   }
 }
 
@@ -110,7 +114,7 @@ export default function AdminPanel({ sessions: localSessions = [], maintenance =
       users: users.length,
       activeUsers: activeSessions.length || activeUsers,
       today: todaysSessions.length,
-      hours: formatDuration(totalMs),
+      hours: formatDuration(totalMs, lang),
       maintenance: maintenance.length
     }
   }, [activeSessions.length, maintenance.length, sessions, users.length])
@@ -189,10 +193,10 @@ export default function AdminPanel({ sessions: localSessions = [], maintenance =
                   <div className="flex items-center justify-between gap-3">
                     <div className="text-fit font-black text-slate-950">{s.username || nameFor(s.user_id)}</div>
                     <span className={`rounded-full px-2 py-1 text-xs font-semibold ${s.status === 'paused' ? 'bg-yellow-100 text-yellow-800' : 'bg-emerald-100 text-emerald-700'}`}>
-                      {s.status || 'active'}
+                      {s.status === 'paused' ? t.statusPaused : t.statusActive}
                     </span>
                   </div>
-                  <div className="mt-2 text-sm text-slate-500">{s.function || '-'} · {s.machine || '-'} · {s.boat || '-'}</div>
+                  <div className="mt-2 text-sm text-slate-500">{s.function || '-'} - {s.machine || '-'} - {s.boat || '-'}</div>
                   <div className="mt-1 text-sm font-semibold text-slate-700">{t.hold}: {s.hold || '-'}</div>
                   <div className="mt-2 text-xs text-slate-400">{s.updated_at ? new Date(s.updated_at).toLocaleTimeString() : ''}</div>
                 </div>
@@ -208,8 +212,8 @@ export default function AdminPanel({ sessions: localSessions = [], maintenance =
           <div className="grid gap-3 lg:hidden">
             {sessions.map(s => (
               <div key={s.id} className="tap-card p-4">
-                <div className="text-fit font-bold text-slate-950">{nameFor(s.user_id || s.user)} · {s.machine || '-'} · {t.hold} {s.hold || '-'}</div>
-                <div className="mt-1 text-sm text-slate-500">{s.function || '-'} · {s.boat || '-'}</div>
+                <div className="text-fit font-bold text-slate-950">{nameFor(s.user_id || s.user)} - {s.machine || '-'} - {t.hold} {s.hold || '-'}</div>
+                <div className="mt-1 text-sm text-slate-500">{s.function || '-'} - {s.boat || '-'}</div>
                 <div className="mt-3 text-xs font-semibold text-slate-400">{s.start ? new Date(s.start).toLocaleString() : ''}</div>
               </div>
             ))}
@@ -237,7 +241,7 @@ export default function AdminPanel({ sessions: localSessions = [], maintenance =
                     <td className="p-3">{s.boat}</td>
                     <td className="p-3">{s.hold}</td>
                     <td className="p-3">{s.start ? new Date(s.start).toLocaleString() : ''}</td>
-                    <td className="p-3">{formatDuration(s.duration_ms)}</td>
+                    <td className="p-3">{formatDuration(s.duration_ms, lang)}</td>
                   </tr>
                 ))}
               </tbody>

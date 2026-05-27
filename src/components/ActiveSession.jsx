@@ -154,7 +154,7 @@ export default function ActiveSession({ sessionInfo = {}, onSave = () => {}, onA
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm min-w-0">
           <div className="text-sm text-gray-500">{t.function}</div>
-          <div className="truncate font-medium">{getFunctionLabel(sessionInfo.function)}</div>
+          <div className="truncate font-medium">{getFunctionLabel(sessionInfo.function, lang)}</div>
         </div>
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <div className="text-sm text-gray-500">{t.machine}</div>

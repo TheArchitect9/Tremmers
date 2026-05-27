@@ -1,24 +1,10 @@
 import React from 'react'
+import { getFunctionLabel } from '../utils/functionLabels'
 
 const functions = [
-  {
-    id: 'tremmer-1',
-    label: '1e Tremmer',
-    detail: 'Kraan en hoofdwerk',
-    accent: 'from-sky-500 to-cyan-400'
-  },
-  {
-    id: 'tremmer-2',
-    label: '2e Tremmer',
-    detail: 'Shovel en ondersteuning',
-    accent: 'from-emerald-500 to-teal-400'
-  },
-  {
-    id: 'tremmer-3',
-    label: '3e Tremmer',
-    detail: 'Controle en afronding',
-    accent: 'from-amber-500 to-orange-400'
-  }
+  { id: 'tremmer-1', accent: 'from-sky-500 to-cyan-400' },
+  { id: 'tremmer-2', accent: 'from-emerald-500 to-teal-400' },
+  { id: 'tremmer-3', accent: 'from-amber-500 to-orange-400' }
 ]
 
 const copy = {
@@ -37,7 +23,13 @@ const copy = {
     lastEntry: 'Laatste registratie',
     noSessions: 'Nog geen sessies vandaag',
     activeNow: 'Nu bezig',
-    start: 'Start'
+    start: 'Start',
+    functionDetails: {
+      'tremmer-1': 'Kraan en hoofdwerk',
+      'tremmer-2': 'Shovel en ondersteuning',
+      'tremmer-3': 'Controle en afronding'
+    },
+    duration: (hours, minutes) => `${hours}u ${minutes}m`
   },
   en: {
     ownerBadge: 'Owner overview',
@@ -54,14 +46,20 @@ const copy = {
     lastEntry: 'Latest entry',
     noSessions: 'No sessions today yet',
     activeNow: 'Active now',
-    start: 'Start'
+    start: 'Start',
+    functionDetails: {
+      'tremmer-1': 'Crane and primary work',
+      'tremmer-2': 'Loader and support work',
+      'tremmer-3': 'Inspection and wrap-up'
+    },
+    duration: (hours, minutes) => `${hours}h ${minutes}m`
   }
 }
 
-function formatDuration(ms = 0) {
+function formatDuration(ms = 0, t) {
   const hours = Math.floor(ms / 3600000)
   const minutes = Math.floor((ms % 3600000) / 60000)
-  return `${hours}u ${minutes}m`
+  return t.duration(hours, minutes)
 }
 
 export default function FunctionSelection({
@@ -96,14 +94,14 @@ export default function FunctionSelection({
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
             <div className="rounded-2xl bg-white p-3 shadow-sm">
               <div className="text-xs font-semibold uppercase text-slate-400">{t.today}</div>
               <div className="mt-1 text-xl font-black text-slate-950 sm:text-2xl">{todaysSessions.length}</div>
             </div>
             <div className="rounded-2xl bg-white p-3 shadow-sm">
               <div className="text-xs font-semibold uppercase text-slate-400">{t.hours}</div>
-              <div className="mt-1 text-xl font-black text-slate-950 sm:text-2xl">{formatDuration(totalMs)}</div>
+              <div className="mt-1 text-xl font-black text-slate-950 sm:text-2xl">{formatDuration(totalMs, t)}</div>
             </div>
             <div className="rounded-2xl bg-white p-3 shadow-sm">
               <div className="text-xs font-semibold uppercase text-slate-400">{t.service}</div>
@@ -126,11 +124,11 @@ export default function FunctionSelection({
               className="tap-card group min-w-0 overflow-hidden p-4 text-left"
             >
               <div className={`mb-5 h-2 w-20 rounded-full bg-gradient-to-r ${fn.accent}`} />
-              <div className="text-fit text-xl font-black text-slate-950">{fn.label}</div>
-              <div className="mt-1 text-sm text-slate-500">{fn.detail}</div>
+              <div className="text-fit text-xl font-black text-slate-950">{getFunctionLabel(fn.id, lang)}</div>
+              <div className="mt-1 text-sm text-slate-500">{t.functionDetails[fn.id]}</div>
               <div className="mt-6 flex items-center justify-between gap-3">
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{t.start}</span>
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-950 text-white transition group-hover:translate-x-1">→</span>
+                <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-950 text-white transition group-hover:translate-x-1">-&gt;</span>
               </div>
             </button>
           ))}
@@ -152,7 +150,7 @@ export default function FunctionSelection({
           <div className="mt-5 rounded-2xl bg-white p-4 shadow-sm">
             <div className="text-xs font-semibold uppercase text-slate-400">{t.lastEntry}</div>
             <div className="text-fit mt-2 text-sm font-semibold text-slate-900">
-              {lastSession ? `${lastSession.machine || '-'} · ${lastSession.hold || '-'}` : t.noSessions}
+              {lastSession ? `${lastSession.machine || '-'} - ${lastSession.hold || '-'}` : t.noSessions}
             </div>
           </div>
         </aside>

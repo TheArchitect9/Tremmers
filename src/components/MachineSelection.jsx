@@ -22,7 +22,7 @@ export default function MachineSelection({ fn, onSelect = () => {}, onBack = () 
         <div className="grid gap-5 sm:grid-cols-[1fr_auto] sm:items-center">
           <div>
             <div className="text-sm font-semibold text-slate-500">{t.selected}</div>
-            <h2 className="text-fit mt-1 text-2xl font-black text-slate-950 sm:text-4xl">{getFunctionLabel(fn)}</h2>
+            <h2 className="text-fit mt-1 text-2xl font-black text-slate-950 sm:text-4xl">{getFunctionLabel(fn, lang)}</h2>
           </div>
 
           <img

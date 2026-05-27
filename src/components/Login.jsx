@@ -14,6 +14,8 @@ const copy = {
     switchRegister: 'Of maak een nieuw account',
     switchLogin: 'Of log in',
     success: 'Account aangemaakt. Je kunt nu inloggen.',
+    loginFailed: 'Inloggen mislukt',
+    registerFailed: 'Registreren mislukt',
     lang: 'English',
     tiles: ['Shift starten', 'Ruim sluiten', 'Onderhoud melden']
   },
@@ -30,6 +32,8 @@ const copy = {
     switchRegister: 'Create a new account',
     switchLogin: 'Sign in instead',
     success: 'Account created. You can sign in now.',
+    loginFailed: 'Sign-in failed',
+    registerFailed: 'Registration failed',
     lang: 'Nederlands',
     tiles: ['Start shift', 'Close hold', 'Report maintenance']
   }
@@ -44,12 +48,12 @@ export default function Login({ onLogin = () => {}, onRegister = () => {}, lang 
 
   async function handleLogin() {
     const res = await onLogin({ identifier, password });
-    if (!res.ok) setMessage(res.message || 'Login failed');
+    if (!res.ok) setMessage(res.message || t.loginFailed);
   }
 
   async function handleRegister() {
     const res = await onRegister({ identifier, password });
-    if (!res.ok) setMessage(res.message || 'Registration failed');
+    if (!res.ok) setMessage(res.message || t.registerFailed);
     else setMessage(t.success);
   }
 
