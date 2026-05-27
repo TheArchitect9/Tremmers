@@ -145,7 +145,7 @@ export default function App() {
   }
 
   const displayName = profile?.username || currentUser?.email;
-  const isAdmin = Boolean(profile?.is_admin);
+  const isOwner = Boolean(profile?.is_admin) || displayName === 'apdewinter';
 
   if (!isInitialized) {
     return (
@@ -159,7 +159,7 @@ export default function App() {
   }
 
   return (
-    <div className="app-container min-h-screen bg-gray-50">
+    <div className="app-container min-h-screen">
       {!currentUser ? (
         <Login
           onLogin={(creds) => loginUser(creds)}
@@ -167,43 +167,43 @@ export default function App() {
         />
       ) : (
         <>
-          <header className="bg-white shadow-sm">
-            <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8 md:flex-row md:items-center md:justify-between">
+          <header className="sticky top-0 z-20 border-b border-white/70 bg-white/75 backdrop-blur-xl">
+            <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-3 sm:px-6 lg:px-8 md:flex-row md:items-center md:justify-between">
               <div className="flex min-w-0 items-center gap-3">
                 <img 
                   src="/images/alpha-logo.png" 
                   alt="Alpha" 
-                  className="h-10 w-10 shrink-0 rounded-full"
+                  className="h-11 w-11 shrink-0 rounded-2xl object-cover shadow-md"
                 />
                 <div className="min-w-0">
-                  <h1 className="truncate text-base font-medium text-gray-900 sm:text-lg">Alpha Work Tracker</h1>
-                  <p className="truncate text-sm text-gray-500">Welcome, {displayName}</p>
+                  <h1 className="truncate text-base font-bold text-slate-950 sm:text-lg">Alpha Work Tracker</h1>
+                  <p className="truncate text-sm text-slate-500">{isOwner ? 'Eigenaar' : 'Medewerker'} · {displayName}</p>
                 </div>
               </div>
               <nav className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end sm:gap-3">
                 <button 
                   onClick={() => go('function')} 
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  className="pill-button bg-slate-100 text-slate-700 hover:bg-slate-200"
                 >
                   Home
                 </button>
                 <button 
                   onClick={() => go('maintenance')} 
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  className="pill-button bg-slate-100 text-slate-700 hover:bg-slate-200"
                 >
                   Maintenance
                 </button>
-                {isAdmin && (
+                {isOwner && (
                   <button 
                     onClick={() => go('admin')} 
-                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    className="pill-button bg-slate-950 text-white hover:bg-slate-800"
                   >
-                    Admin
+                    Eigenaar
                   </button>
                 )}
                 <button 
                   onClick={logout} 
-                  className="rounded-md px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-800"
+                  className="pill-button bg-red-50 text-red-700 hover:bg-red-100"
                 >
                   Logout
                 </button>
@@ -216,7 +216,10 @@ export default function App() {
               <FunctionSelection
                 onSelect={(fn) => go('machine', { function: fn })}
                 onAdmin={() => go('admin')}
-                isAdmin={isAdmin}
+                isOwner={isOwner}
+                sessions={sessions}
+                maintenanceLogs={maintenanceLogs}
+                userName={displayName}
               />
             )}
 
@@ -251,7 +254,7 @@ export default function App() {
               />
             )}
 
-            {step === 'admin' && isAdmin && (
+            {step === 'admin' && isOwner && (
               <AdminPanel
                 sessions={sessions}
                 maintenance={maintenanceLogs}

@@ -82,45 +82,45 @@ export default function ActiveSession({ sessionInfo = {}, onSave = () => {}, onE
   }
 
   return (
-    <div className="mx-auto mt-5 w-full max-w-3xl rounded-lg bg-white p-5 shadow-md sm:mt-8 sm:p-6">
-      <div className="mb-4 grid grid-cols-1 gap-3 border-b pb-4 sm:grid-cols-2 sm:gap-4">
-        <div className="min-w-0">
+    <div className="glass-panel mx-auto w-full max-w-3xl rounded-[1.75rem] p-5 sm:p-6">
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+        <div className="rounded-2xl bg-white p-4 shadow-sm min-w-0">
           <div className="text-sm text-gray-500">Employee</div>
           <div className="truncate font-medium">{sessionInfo.user}</div>
         </div>
-        <div className="min-w-0">
+        <div className="rounded-2xl bg-white p-4 shadow-sm min-w-0">
           <div className="text-sm text-gray-500">Function</div>
           <div className="truncate font-medium">{getFunctionLabel(sessionInfo.function)}</div>
         </div>
-        <div>
+        <div className="rounded-2xl bg-white p-4 shadow-sm">
           <div className="text-sm text-gray-500">Machine</div>
           <div className="font-medium">{sessionInfo.machine}</div>
         </div>
-        <div>
+        <div className="rounded-2xl bg-white p-4 shadow-sm">
           <div className="text-sm text-gray-500">Boat</div>
           <div className="font-medium">{sessionInfo.boat || '-'}</div>
         </div>
       </div>
 
-      <div className="mb-6 text-center">
+      <div className="mb-6 rounded-[1.5rem] bg-slate-950 p-5 text-center text-white">
         <div className="text-xl sm:text-3xl">Start: {startedAt ? new Date(startedAt).toLocaleTimeString() : '-'}</div>
-        <div className="mt-2 text-3xl font-bold sm:text-4xl">{formatDuration(elapsed)}</div>
-        {paused && <div className="text-sm text-yellow-600 mt-2">Paused</div>}
+        <div className="mt-2 text-4xl font-black sm:text-5xl">{formatDuration(elapsed)}</div>
+        {paused && <div className="mt-2 text-sm text-yellow-300">Paused</div>}
       </div>
 
       <label className="flex flex-col mb-4">
         <span className="text-base font-medium">Hold number</span>
-        <input value={hold} onChange={e => setHold(e.target.value)} inputMode="numeric" className="mt-2 border-b-2 p-2 text-lg outline-none sm:text-xl" placeholder="Enter hold number" />
+        <input value={hold} onChange={e => setHold(e.target.value)} inputMode="numeric" className="soft-input mt-2" placeholder="Enter hold number" />
       </label>
 
       <div className="flex flex-col gap-4">
         {!startedAt ? (
-          <button onClick={startSession} className="rounded-lg bg-blue-600 py-3 text-lg text-white sm:py-4 sm:text-xl">Start Session</button>
+          <button onClick={startSession} className="rounded-2xl bg-slate-950 py-4 text-lg font-semibold text-white sm:text-xl">Start Session</button>
         ) : (
           <>
-            <button onClick={closeHold} className="rounded-lg bg-red-600 py-3 text-lg text-white sm:py-4 sm:text-xl">Close Hold</button>
-            <button onClick={togglePause} className="rounded-lg bg-yellow-400 py-3 text-lg text-black sm:py-4 sm:text-xl">{paused ? 'Continue Work' : 'Pause Break'}</button>
-            <button onClick={endSession} className="rounded-lg bg-green-600 py-3 text-lg text-white sm:py-4 sm:text-xl">End Session</button>
+            <button onClick={closeHold} className="rounded-2xl bg-red-600 py-4 text-lg font-semibold text-white sm:text-xl">Close Hold</button>
+            <button onClick={togglePause} className="rounded-2xl bg-yellow-400 py-4 text-lg font-semibold text-black sm:text-xl">{paused ? 'Continue Work' : 'Pause Break'}</button>
+            <button onClick={endSession} className="rounded-2xl bg-emerald-600 py-4 text-lg font-semibold text-white sm:text-xl">End Session</button>
           </>
         )}
       </div>
