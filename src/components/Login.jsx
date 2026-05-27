@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 
 export default function Login({ onLogin = () => {}, onRegister = () => {} }) {
   const [mode, setMode] = useState('login');
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
   async function handleLogin() {
-    const res = await onLogin({ email, password });
+    const res = await onLogin({ identifier, password });
     if (!res.ok) setMessage(res.message || 'Login failed');
   }
 
   async function handleRegister() {
-    const res = await onRegister({ email, password });
+    const res = await onRegister({ identifier, password });
     if (!res.ok) setMessage(res.message || 'Registration failed');
     else setMessage('Kijk in je mail voor bevestiging.');
   }
@@ -22,9 +22,9 @@ export default function Login({ onLogin = () => {}, onRegister = () => {} }) {
       <h1 className="text-2xl font-bold mb-4">Login / Registratie</h1>
       <input
         className="w-full p-2 mb-4 border rounded"
-        placeholder="E-mail"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
+        placeholder="E-mail of gebruikersnaam"
+        value={identifier}
+        onChange={e => setIdentifier(e.target.value)}
       />
       <input
         className="w-full p-2 mb-4 border rounded"

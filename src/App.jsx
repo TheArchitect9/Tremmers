@@ -8,9 +8,12 @@ import AdminPanel from './components/AdminPanel';
 import Maintenance from './components/Maintenance';
 import { supabase } from './lib/supabaseClient';
 
+const USERS_KEY = 'awt_users_v1';
+
 export default function App() {
   const [step, setStep] = useState('login');
   const [state, setState] = useState({});
+  const [legacyUsers, setLegacyUsers] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [maintenanceLogs, setMaintenanceLogs] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -19,6 +22,13 @@ export default function App() {
 
   useEffect(() => {
     const initializeApp = async () => {
+      try {
+        const rawUsers = localStorage.getItem(USERS_KEY);
+        setLegacyUsers(rawUsers ? JSON.parse(rawUsers) : []);
+      } catch (err) {
+        console.warn('Could not load local users', err);
+      }
+
       const { data } = await supabase.auth.getSession();
       if (data.session?.user) {
         await setSignedInUser(data.session.user);
@@ -47,22 +57,50 @@ export default function App() {
     setStep('function');
   }
 
-  async function registerUser({ email, password }) {
-    const { error } = await supabase.auth.signUp({ email, password });
+  async function registerUser({ identifier, email, password }) {
+    const loginName = (identifier || email || '').trim();
+
+    if (!loginName.includes('@')) {
+      if (legacyUsers.find(u => u.username === loginName)) {
+        return { ok: false, message: 'Gebruikersnaam bestaat al' };
+      }
+
+      const user = { username: loginName, password, isAdmin: false, isLegacy: true };
+      const nextUsers = [...legacyUsers, user];
+      setLegacyUsers(nextUsers);
+      localStorage.setItem(USERS_KEY, JSON.stringify(nextUsers));
+      return { ok: true };
+    }
+
+    const { error } = await supabase.auth.signUp({ email: loginName, password });
     if (error) return { ok: false, message: error.message };
     // User will confirm email; after confirmation Supabase profile can be synced if needed
     return { ok: true };
   }
 
-  async function loginUser({ email, password }) {
-    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { ok: false, message: error.message };
-    await setSignedInUser(data.user);
-    return { ok: true, user: data.user };
+  async function loginUser({ identifier, email, password }) {
+    const loginName = (identifier || email || '').trim();
+
+    if (loginName.includes('@')) {
+      const { error, data } = await supabase.auth.signInWithPassword({ email: loginName, password });
+      if (error) return { ok: false, message: error.message };
+      await setSignedInUser(data.user);
+      return { ok: true, user: data.user };
+    }
+
+    const legacyUser = legacyUsers.find(u => u.username === loginName && u.password === password);
+    if (!legacyUser) return { ok: false, message: 'Gebruikersnaam of wachtwoord klopt niet' };
+
+    setCurrentUser({ ...legacyUser, email: legacyUser.username, isLegacy: true });
+    setProfile({ username: legacyUser.username, is_admin: Boolean(legacyUser.isAdmin) });
+    setStep('function');
+    return { ok: true, user: legacyUser };
   }
 
   async function logout() {
-    await supabase.auth.signOut();
+    if (!currentUser?.isLegacy) {
+      await supabase.auth.signOut();
+    }
     setCurrentUser(null);
     setProfile(null);
     setStep('login');
@@ -70,6 +108,8 @@ export default function App() {
 
   async function saveSession(record) {
     setSessions(prev => [record, ...prev]);
+
+    if (currentUser?.isLegacy) return;
 
     try {
       await supabase.from('sessions').insert({
@@ -89,6 +129,8 @@ export default function App() {
 
   async function saveMaintenance(record) {
     setMaintenanceLogs(prev => [record, ...prev]);
+
+    if (currentUser?.isLegacy) return;
 
     try {
       await supabase.from('maintenance').insert({
