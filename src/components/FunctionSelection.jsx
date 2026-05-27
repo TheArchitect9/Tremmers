@@ -21,6 +21,43 @@ const functions = [
   }
 ]
 
+const copy = {
+  nl: {
+    ownerBadge: 'Eigenaarsoverzicht',
+    workerBadge: 'Werkdag',
+    ownerTitle: 'Alles in beeld, zonder zoeken.',
+    workerTitle: name => `Klaar voor je shift${name ? `, ${name}` : ''}?`,
+    subtitle: 'Start sneller, houd ruimen strak bij en zie direct wat vandaag is vastgelegd.',
+    today: 'Vandaag',
+    hours: 'Uren',
+    service: 'Service',
+    quickActions: 'Snelle acties',
+    newHold: 'Nieuwe ruim starten',
+    ownerPanel: 'Open eigenaarspaneel',
+    lastEntry: 'Laatste registratie',
+    noSessions: 'Nog geen sessies vandaag',
+    activeNow: 'Nu bezig',
+    start: 'Start'
+  },
+  en: {
+    ownerBadge: 'Owner overview',
+    workerBadge: 'Workday',
+    ownerTitle: 'Everything visible without searching.',
+    workerTitle: name => `Ready for your shift${name ? `, ${name}` : ''}?`,
+    subtitle: 'Start faster, track holds clearly, and see what was logged today.',
+    today: 'Today',
+    hours: 'Hours',
+    service: 'Service',
+    quickActions: 'Quick actions',
+    newHold: 'Start new hold',
+    ownerPanel: 'Open owner panel',
+    lastEntry: 'Latest entry',
+    noSessions: 'No sessions today yet',
+    activeNow: 'Active now',
+    start: 'Start'
+  }
+}
+
 function formatDuration(ms = 0) {
   const hours = Math.floor(ms / 3600000)
   const minutes = Math.floor((ms % 3600000) / 60000)
@@ -33,8 +70,11 @@ export default function FunctionSelection({
   isOwner = false,
   sessions = [],
   maintenanceLogs = [],
-  userName = ''
+  activeSessions = [],
+  userName = '',
+  lang = 'nl'
 }) {
+  const t = copy[lang]
   const today = new Date().toDateString()
   const todaysSessions = sessions.filter(s => s.start && new Date(s.start).toDateString() === today)
   const totalMs = todaysSessions.reduce((sum, s) => sum + (s.duration_ms || 0), 0)
@@ -46,28 +86,32 @@ export default function FunctionSelection({
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
           <div className="min-w-0">
             <div className="mb-3 inline-flex rounded-full bg-slate-950 px-3 py-1 text-xs font-semibold text-white">
-              {isOwner ? 'Eigenaarsoverzicht' : 'Werkdag'}
+              {isOwner ? t.ownerBadge : t.workerBadge}
             </div>
             <h2 className="text-fit text-2xl font-black tracking-normal text-slate-950 sm:text-4xl">
-              {isOwner ? 'Alles in beeld, zonder zoeken.' : `Klaar voor je shift${userName ? `, ${userName}` : ''}?`}
+              {isOwner ? t.ownerTitle : t.workerTitle(userName)}
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-              Start sneller, houd ruimen strak bij en zie direct wat vandaag is vastgelegd.
+              {t.subtitle}
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <div className="rounded-2xl bg-white p-3 shadow-sm">
-              <div className="text-xs font-semibold uppercase text-slate-400">Vandaag</div>
+              <div className="text-xs font-semibold uppercase text-slate-400">{t.today}</div>
               <div className="mt-1 text-xl font-black text-slate-950 sm:text-2xl">{todaysSessions.length}</div>
             </div>
             <div className="rounded-2xl bg-white p-3 shadow-sm">
-              <div className="text-xs font-semibold uppercase text-slate-400">Uren</div>
+              <div className="text-xs font-semibold uppercase text-slate-400">{t.hours}</div>
               <div className="mt-1 text-xl font-black text-slate-950 sm:text-2xl">{formatDuration(totalMs)}</div>
             </div>
             <div className="rounded-2xl bg-white p-3 shadow-sm">
-              <div className="text-xs font-semibold uppercase text-slate-400">Service</div>
+              <div className="text-xs font-semibold uppercase text-slate-400">{t.service}</div>
               <div className="mt-1 text-xl font-black text-slate-950 sm:text-2xl">{maintenanceLogs.length}</div>
+            </div>
+            <div className="rounded-2xl bg-white p-3 shadow-sm">
+              <div className="text-xs font-semibold uppercase text-slate-400">{t.activeNow}</div>
+              <div className="mt-1 text-xl font-black text-slate-950 sm:text-2xl">{activeSessions.length}</div>
             </div>
           </div>
         </div>
@@ -85,7 +129,7 @@ export default function FunctionSelection({
               <div className="text-fit text-xl font-black text-slate-950">{fn.label}</div>
               <div className="mt-1 text-sm text-slate-500">{fn.detail}</div>
               <div className="mt-6 flex items-center justify-between gap-3">
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Start</span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{t.start}</span>
                 <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-950 text-white transition group-hover:translate-x-1">→</span>
               </div>
             </button>
@@ -93,22 +137,22 @@ export default function FunctionSelection({
         </div>
 
         <aside className="glass-panel rounded-[1.5rem] p-4">
-          <div className="text-sm font-bold text-slate-950">Snelle acties</div>
+          <div className="text-sm font-bold text-slate-950">{t.quickActions}</div>
           <div className="mt-3 grid gap-2">
             <button onClick={() => onSelect('tremmer-1')} className="rounded-2xl bg-white px-4 py-3 text-left text-sm font-semibold shadow-sm">
-              Nieuwe ruim starten
+              {t.newHold}
             </button>
             {isOwner && (
               <button onClick={onAdmin} className="rounded-2xl bg-slate-950 px-4 py-3 text-left text-sm font-semibold text-white shadow-sm">
-                Open eigenaarspaneel
+                {t.ownerPanel}
               </button>
             )}
           </div>
 
           <div className="mt-5 rounded-2xl bg-white p-4 shadow-sm">
-            <div className="text-xs font-semibold uppercase text-slate-400">Laatste registratie</div>
+            <div className="text-xs font-semibold uppercase text-slate-400">{t.lastEntry}</div>
             <div className="text-fit mt-2 text-sm font-semibold text-slate-900">
-              {lastSession ? `${lastSession.machine || '-'} · ${lastSession.hold || 'geen ruim'}` : 'Nog geen sessies vandaag'}
+              {lastSession ? `${lastSession.machine || '-'} · ${lastSession.hold || '-'}` : t.noSessions}
             </div>
           </div>
         </aside>
