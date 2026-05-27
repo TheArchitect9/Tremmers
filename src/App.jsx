@@ -168,42 +168,42 @@ export default function App() {
       ) : (
         <>
           <header className="bg-white shadow-sm">
-            <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+            <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8 md:flex-row md:items-center md:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
                 <img 
                   src="/images/alpha-logo.png" 
                   alt="Alpha" 
-                  className="h-10 w-10 rounded-full"
+                  className="h-10 w-10 shrink-0 rounded-full"
                 />
-                <div>
-                  <h1 className="text-lg font-medium text-gray-900">Alpha Work Tracker</h1>
-                  <p className="text-sm text-gray-500">Welcome, {displayName}</p>
+                <div className="min-w-0">
+                  <h1 className="truncate text-base font-medium text-gray-900 sm:text-lg">Alpha Work Tracker</h1>
+                  <p className="truncate text-sm text-gray-500">Welcome, {displayName}</p>
                 </div>
               </div>
-              <nav className="flex space-x-4">
+              <nav className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end sm:gap-3">
                 <button 
                   onClick={() => go('function')} 
-                  className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 >
                   Home
                 </button>
                 <button 
                   onClick={() => go('maintenance')} 
-                  className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 >
                   Maintenance
                 </button>
                 {isAdmin && (
                   <button 
                     onClick={() => go('admin')} 
-                    className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                    className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                   >
                     Admin
                   </button>
                 )}
                 <button 
                   onClick={logout} 
-                  className="px-3 py-2 text-sm font-medium text-red-600 hover:text-red-800"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-800"
                 >
                   Logout
                 </button>
@@ -211,7 +211,7 @@ export default function App() {
             </div>
           </header>
 
-          <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+          <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
             {step === 'function' && (
               <FunctionSelection
                 onSelect={(fn) => go('machine', { function: fn })}

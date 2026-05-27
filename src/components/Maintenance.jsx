@@ -28,13 +28,13 @@ export default function Maintenance({ user, onSave = () => {}, onBack = () => {}
   }
 
   return (
-    <div className="max-w-3xl mx-auto mt-8 bg-white rounded-xl p-8 shadow-md">
+    <div className="mx-auto mt-5 w-full max-w-3xl rounded-lg bg-white p-5 shadow-md sm:mt-8 sm:p-8">
       <button className="text-sm text-blue-600 mb-4" onClick={onBack}>Back</button>
-      <h3 className="text-xl font-bold mb-4">Maintenance</h3>
+      <h3 className="mb-4 text-lg font-bold sm:text-xl">Maintenance</h3>
 
       <label className="flex flex-col mb-4">
         <span className="text-base font-medium">Machine number</span>
-        <input value={machine} onChange={e => setMachine(e.target.value)} className="mt-2 border-b-2 p-2 text-xl outline-none" placeholder="e.g. 140" />
+        <input value={machine} onChange={e => setMachine(e.target.value)} className="mt-2 border-b-2 p-2 text-lg outline-none sm:text-xl" placeholder="e.g. 140" />
       </label>
 
       <div className="flex flex-col gap-3 mb-6">
@@ -46,9 +46,9 @@ export default function Maintenance({ user, onSave = () => {}, onBack = () => {}
         ))}
       </div>
 
-      <div className="flex gap-4">
-        <button onClick={handleSave} className="bg-blue-600 text-white rounded-lg py-3 px-4">Save</button>
-        <button onClick={onBack} className="bg-gray-200 rounded-lg py-3 px-4">Cancel</button>
+      <div className="grid gap-3 sm:flex sm:gap-4">
+        <button onClick={handleSave} className="rounded-lg bg-blue-600 px-4 py-3 text-white">Save</button>
+        <button onClick={onBack} className="rounded-lg bg-gray-200 px-4 py-3">Cancel</button>
       </div>
     </div>
   )

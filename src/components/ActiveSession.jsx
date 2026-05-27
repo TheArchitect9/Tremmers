@@ -82,15 +82,15 @@ export default function ActiveSession({ sessionInfo = {}, onSave = () => {}, onE
   }
 
   return (
-    <div className="max-w-3xl mx-auto mt-8 bg-white rounded-xl p-6 shadow-md">
-      <div className="grid grid-cols-2 gap-4 border-b pb-4 mb-4">
-        <div>
+    <div className="mx-auto mt-5 w-full max-w-3xl rounded-lg bg-white p-5 shadow-md sm:mt-8 sm:p-6">
+      <div className="mb-4 grid grid-cols-1 gap-3 border-b pb-4 sm:grid-cols-2 sm:gap-4">
+        <div className="min-w-0">
           <div className="text-sm text-gray-500">Employee</div>
-          <div className="font-medium">{sessionInfo.user}</div>
+          <div className="truncate font-medium">{sessionInfo.user}</div>
         </div>
-        <div>
+        <div className="min-w-0">
           <div className="text-sm text-gray-500">Function</div>
-          <div className="font-medium">{getFunctionLabel(sessionInfo.function)}</div>
+          <div className="truncate font-medium">{getFunctionLabel(sessionInfo.function)}</div>
         </div>
         <div>
           <div className="text-sm text-gray-500">Machine</div>
@@ -102,25 +102,25 @@ export default function ActiveSession({ sessionInfo = {}, onSave = () => {}, onE
         </div>
       </div>
 
-      <div className="text-center mb-6">
-        <div className="text-3xl">Start: {startedAt ? new Date(startedAt).toLocaleTimeString() : '-'}</div>
-        <div className="text-4xl font-bold mt-2">{formatDuration(elapsed)}</div>
+      <div className="mb-6 text-center">
+        <div className="text-xl sm:text-3xl">Start: {startedAt ? new Date(startedAt).toLocaleTimeString() : '-'}</div>
+        <div className="mt-2 text-3xl font-bold sm:text-4xl">{formatDuration(elapsed)}</div>
         {paused && <div className="text-sm text-yellow-600 mt-2">Paused</div>}
       </div>
 
       <label className="flex flex-col mb-4">
         <span className="text-base font-medium">Hold number</span>
-        <input value={hold} onChange={e => setHold(e.target.value)} inputMode="numeric" className="mt-2 border-b-2 p-2 text-xl outline-none" placeholder="Enter hold number" />
+        <input value={hold} onChange={e => setHold(e.target.value)} inputMode="numeric" className="mt-2 border-b-2 p-2 text-lg outline-none sm:text-xl" placeholder="Enter hold number" />
       </label>
 
       <div className="flex flex-col gap-4">
         {!startedAt ? (
-          <button onClick={startSession} className="bg-blue-600 text-white rounded-lg py-4 text-xl">Start Session</button>
+          <button onClick={startSession} className="rounded-lg bg-blue-600 py-3 text-lg text-white sm:py-4 sm:text-xl">Start Session</button>
         ) : (
           <>
-            <button onClick={closeHold} className="bg-red-600 text-white rounded-lg py-4 text-xl">Close Hold</button>
-            <button onClick={togglePause} className="bg-yellow-400 text-black rounded-lg py-4 text-xl">{paused ? 'Continue Work' : 'Pause Break'}</button>
-            <button onClick={endSession} className="bg-green-600 text-white rounded-lg py-4 text-xl">End Session</button>
+            <button onClick={closeHold} className="rounded-lg bg-red-600 py-3 text-lg text-white sm:py-4 sm:text-xl">Close Hold</button>
+            <button onClick={togglePause} className="rounded-lg bg-yellow-400 py-3 text-lg text-black sm:py-4 sm:text-xl">{paused ? 'Continue Work' : 'Pause Break'}</button>
+            <button onClick={endSession} className="rounded-lg bg-green-600 py-3 text-lg text-white sm:py-4 sm:text-xl">End Session</button>
           </>
         )}
       </div>

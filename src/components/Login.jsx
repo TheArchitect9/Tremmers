@@ -18,16 +18,16 @@ export default function Login({ onLogin = () => {}, onRegister = () => {} }) {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-12 bg-white rounded-xl shadow-md p-8">
-      <h1 className="text-2xl font-bold mb-4">Login / Registratie</h1>
+    <div className="mx-auto mt-6 w-full max-w-md rounded-lg bg-white p-5 shadow-md sm:mt-12 sm:p-8">
+      <h1 className="mb-4 text-xl font-bold sm:text-2xl">Login / Registratie</h1>
       <input
-        className="w-full p-2 mb-4 border rounded"
+        className="mb-4 w-full rounded border p-3 text-base"
         placeholder="E-mail of gebruikersnaam"
         value={identifier}
         onChange={e => setIdentifier(e.target.value)}
       />
       <input
-        className="w-full p-2 mb-4 border rounded"
+        className="mb-4 w-full rounded border p-3 text-base"
         type="password"
         placeholder="Wachtwoord"
         value={password}
@@ -35,13 +35,13 @@ export default function Login({ onLogin = () => {}, onRegister = () => {} }) {
       />
       {message && <div className="mb-2 text-red-600">{message}</div>}
       <button
-        className="w-full bg-blue-600 text-white py-2 rounded mb-2"
+        className="mb-2 w-full rounded bg-blue-600 py-3 text-white"
         onClick={mode === 'login' ? handleLogin : handleRegister}
       >
         {mode === 'login' ? 'Log in' : 'Maak account'}
       </button>
       <button
-        className="w-full bg-gray-200 py-2 rounded"
+        className="w-full rounded bg-gray-200 py-3"
         onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
       >
         {mode === 'login' ? 'Of maak een nieuw account' : 'Of log in'}

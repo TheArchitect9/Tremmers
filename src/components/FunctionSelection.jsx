@@ -8,18 +8,18 @@ const functions = [
 
 export default function FunctionSelection({ onSelect = () => {}, onAdmin = () => {}, isAdmin = false }) {
   return (
-    <div className="max-w-3xl mx-auto mt-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Select Your Function</h2>
+    <div className="mx-auto mt-5 w-full max-w-3xl sm:mt-8">
+      <div className="mb-5 flex flex-col gap-2 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-xl font-bold sm:text-2xl">Select Your Function</h2>
         {isAdmin && <button onClick={onAdmin} className="text-sm text-gray-600">Admin</button>}
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div className="grid gap-4 sm:gap-6">
         {functions.map(fn => (
           <button
             key={fn.id}
             onClick={() => onSelect(fn.id)}
-            className="w-full min-h-24 rounded-lg shadow-md bg-white flex items-center justify-center text-2xl font-medium py-6"
+            className="flex min-h-20 w-full items-center justify-center rounded-lg bg-white px-4 py-5 text-xl font-medium shadow-md sm:min-h-24 sm:py-6 sm:text-2xl"
           >
             {fn.label}
           </button>

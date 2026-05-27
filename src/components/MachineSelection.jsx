@@ -10,11 +10,11 @@ const machineSets = {
 export default function MachineSelection({ fn, onSelect = () => {}, onBack = () => {} }) {
   const machines = machineSets[fn] || []
   return (
-    <div className="max-w-3xl mx-auto mt-8">
+    <div className="mx-auto mt-5 w-full max-w-3xl sm:mt-8">
       <button className="text-sm text-blue-600 mb-4" onClick={onBack}>Back</button>
-  <div className="text-lg text-gray-700 opacity-80 mb-4">Selected function: {getFunctionLabel(fn)}</div>
+      <div className="mb-4 text-base text-gray-700 opacity-80 sm:text-lg">Selected function: {getFunctionLabel(fn)}</div>
 
-      <div className="flex justify-center mb-8">
+      <div className="mb-6 flex justify-center sm:mb-8">
         <img
           src={
             fn === 'tremmer-1'
@@ -24,13 +24,13 @@ export default function MachineSelection({ fn, onSelect = () => {}, onBack = () 
               : '/images/shovel-2.png'
           }
           alt="machine"
-          className="w-48 h-48 object-contain"
+          className="h-36 w-36 object-contain sm:h-48 sm:w-48"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
         {machines.map(m => (
-          <button key={m} onClick={() => onSelect(m)} className="min-h-20 bg-white rounded-lg shadow p-4 text-xl">
+          <button key={m} onClick={() => onSelect(m)} className="min-h-16 rounded-lg bg-white p-4 text-lg shadow sm:min-h-20 sm:text-xl">
             {m}
           </button>
         ))}

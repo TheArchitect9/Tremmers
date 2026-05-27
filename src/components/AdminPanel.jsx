@@ -8,7 +8,9 @@ export default function AdminPanel({ onBack = () => {} }) {
   useEffect(() => {
     ;(async () => {
       const { data: u } = await supabase
-        .from('profiles').select('id, username, approved, is_admin, created_at').order('created_at', { ascending: false })
+        .from('profiles')
+        .select('id, username, approved, is_admin, created_at')
+        .order('created_at', { ascending: false })
       setUsers(u || [])
 
       const { data: s } = await supabase
@@ -20,43 +22,53 @@ export default function AdminPanel({ onBack = () => {} }) {
   }, [])
 
   return (
-    <div className="p-4">
-      <button onClick={onBack} className="mb-4">← Back</button>
+    <div className="w-full overflow-hidden">
+      <button onClick={onBack} className="mb-4 text-sm text-blue-600">Back</button>
 
-      <h2 className="text-xl font-semibold mb-2">Users</h2>
-      <ul className="mb-6">
+      <h2 className="mb-2 text-lg font-semibold sm:text-xl">Users</h2>
+      <ul className="mb-6 space-y-2 break-words text-sm sm:text-base">
         {users.map(u => (
-          <li key={u.id}>
-            {u.username || u.id}
-            <span className="text-xs text-gray-500"> ({new Date(u.created_at).toLocaleString()})</span>
+          <li key={u.id} className="rounded-lg bg-white p-3 shadow-sm">
+            <span className="font-medium">{u.username || u.id}</span>
+            <span className="block text-xs text-gray-500 sm:inline">
+              {u.created_at ? ` ${new Date(u.created_at).toLocaleString()}` : ''}
+            </span>
             {u.is_admin && <span className="ml-2 text-xs text-blue-600">admin</span>}
           </li>
         ))}
       </ul>
 
-      <h2 className="text-xl font-semibold mb-2">Sessions</h2>
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="text-left">
-            <th>User</th><th>Function</th><th>Machine</th><th>Boat</th><th>Hold</th>
-            <th>Start</th><th>End</th><th>Duration (ms)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sessions.map(s => (
-            <tr key={s.id}>
-              <td>{s.user_id}</td>
-              <td>{s.function}</td>
-              <td>{s.machine}</td>
-              <td>{s.boat}</td>
-              <td>{s.hold}</td>
-              <td>{s.start ? new Date(s.start).toLocaleString() : ''}</td>
-              <td>{s.end ? new Date(s.end).toLocaleString() : ''}</td>
-              <td>{s.duration_ms ?? ''}</td>
+      <h2 className="mb-2 text-lg font-semibold sm:text-xl">Sessions</h2>
+      <div className="w-full overflow-x-auto rounded-lg border bg-white">
+        <table className="min-w-[760px] w-full text-sm">
+          <thead>
+            <tr className="text-left">
+              <th className="p-2">User</th>
+              <th className="p-2">Function</th>
+              <th className="p-2">Machine</th>
+              <th className="p-2">Boat</th>
+              <th className="p-2">Hold</th>
+              <th className="p-2">Start</th>
+              <th className="p-2">End</th>
+              <th className="p-2">Duration (ms)</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sessions.map(s => (
+              <tr key={s.id} className="border-t">
+                <td className="p-2">{s.user_id}</td>
+                <td className="p-2">{s.function}</td>
+                <td className="p-2">{s.machine}</td>
+                <td className="p-2">{s.boat}</td>
+                <td className="p-2">{s.hold}</td>
+                <td className="p-2">{s.start ? new Date(s.start).toLocaleString() : ''}</td>
+                <td className="p-2">{s.end ? new Date(s.end).toLocaleString() : ''}</td>
+                <td className="p-2">{s.duration_ms ?? ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
