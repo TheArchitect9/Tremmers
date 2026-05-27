@@ -6,12 +6,12 @@ const functions = [
   { id: 'tremmer-3', label: '3e Tremmer' }
 ]
 
-export default function FunctionSelection({ onSelect = () => {}, onAdmin = () => {} }) {
+export default function FunctionSelection({ onSelect = () => {}, onAdmin = () => {}, isAdmin = false }) {
   return (
     <div className="max-w-3xl mx-auto mt-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">Select Your Function</h2>
-        <button onClick={onAdmin} className="text-sm text-gray-600">Admin</button>
+        {isAdmin && <button onClick={onAdmin} className="text-sm text-gray-600">Admin</button>}
       </div>
 
       <div className="flex flex-col gap-6">

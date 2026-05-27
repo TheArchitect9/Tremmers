@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabaseClient'
 
 export default function AdminPanel({ onBack = () => {} }) {
   const [users, setUsers] = useState([])
@@ -8,12 +8,12 @@ export default function AdminPanel({ onBack = () => {} }) {
   useEffect(() => {
     ;(async () => {
       const { data: u } = await supabase
-        .from('app_users').select('username, created_at').order('created_at', { ascending: false })
+        .from('profiles').select('id, username, approved, is_admin, created_at').order('created_at', { ascending: false })
       setUsers(u || [])
 
       const { data: s } = await supabase
-        .from('work_sessions')
-        .select('id, username, function, machine, boat, hold, start, end, duration_ms, created_at')
+        .from('sessions')
+        .select('id, user_id, function, machine, boat, hold, start, end, duration_ms, created_at')
         .order('created_at', { ascending: false })
       setSessions(s || [])
     })()
@@ -26,7 +26,11 @@ export default function AdminPanel({ onBack = () => {} }) {
       <h2 className="text-xl font-semibold mb-2">Users</h2>
       <ul className="mb-6">
         {users.map(u => (
-          <li key={u.username}>{u.username} <span className="text-xs text-gray-500">({new Date(u.created_at).toLocaleString()})</span></li>
+          <li key={u.id}>
+            {u.username || u.id}
+            <span className="text-xs text-gray-500"> ({new Date(u.created_at).toLocaleString()})</span>
+            {u.is_admin && <span className="ml-2 text-xs text-blue-600">admin</span>}
+          </li>
         ))}
       </ul>
 
@@ -41,7 +45,7 @@ export default function AdminPanel({ onBack = () => {} }) {
         <tbody>
           {sessions.map(s => (
             <tr key={s.id}>
-              <td>{s.username}</td>
+              <td>{s.user_id}</td>
               <td>{s.function}</td>
               <td>{s.machine}</td>
               <td>{s.boat}</td>

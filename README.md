@@ -2,11 +2,9 @@
 
 This repository contains:
 
-- `DESIGN_SYSTEM.md` — The full design guidelines and tokens (typography, components, spacing, accessibility, flow).
-- A minimal React + Tailwind starter demonstrating the key screens and components described in the design system: Login, Function Selection, Machine Selection, Boat Info, Active Session, Admin Panel.
+- A React + Tailwind starter demonstrating the key screens and components: Login, Function Selection, Machine Selection, Boat Info, Active Session, Admin Panel.
 
 What I created for you
-- Design system Markdown capturing the rules and components.
 - `tailwind.config.js` with extended font sizes and spacing primitives mapped to the design tokens.
 - Minimal Vite + React starter with Tailwind CSS and simple step-based navigation. No backend; session state is transient.
 
@@ -18,7 +16,7 @@ npm run dev
 ```
 
 Notes
-- Place your real images into `public/images/` (see README there) using the file names `alpha-logo.jpg`, `excavator.png`, `shovel-1.png`.
+- Place your real images into `public/images/` (see README there) using the file names `alpha-logo.png`, `excavator.png`, `shovel-1.png`.
 - Fonts: Roboto is loaded in `index.html` via Google Fonts. In production you may self-host for offline use.
 - Icons: The example uses `@heroicons/react`. You can alternatively use the Heroicons CDN or SVGs directly.
 
@@ -52,3 +50,28 @@ Notes:
 - Next I can wire the frontend auth and CRUD calls to Supabase (register/login, create session records, maintenance logs).
 
 Tell me which of those you want next or if you'd like tweaks to the visual tokens.
+
+Protecting server-side API keys
+------------------------------
+The repository includes a small Vercel serverless proxy at `api/supabase-proxy.js` which lets you keep the Supabase
+`service_role` key on the server (never commit keys). Use the server proxy for any operation that requires privileged
+access. Quick notes:
+
+- **Server env vars to set (Vercel)**: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (server-only), and the existing
+	client vars `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
+- **How to call the proxy from the client**: send requests to `/api/supabase-proxy?p=<rest-path>`.
+	Example (JS):
+
+	```javascript
+	// POST to insert into a table via the proxy
+	await fetch('/api/supabase-proxy?p=rest/v1/sessions', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ user_id: '...', started_at: new Date().toISOString() })
+	})
+	```
+
+- **Local development**: create a `.env` with the variables from `.env.example` (do not commit `.env`).
+
+If you want, I can: (a) rewrite specific client calls to use the proxy instead of the public anon key, or (b) add
+convenience helper functions for the proxy.

@@ -1,7 +1,9 @@
 node_modules/
 dist/
-.env.local
 .env
+.env.*
+.env.local
 /.vite
+.DS_Store
 /.idea
 /*.log

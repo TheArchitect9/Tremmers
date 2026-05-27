@@ -6,101 +6,65 @@ import BoatInfo from './components/BoatInfo';
 import ActiveSession from './components/ActiveSession';
 import AdminPanel from './components/AdminPanel';
 import Maintenance from './components/Maintenance';
-import { supabase } from './lib/supabase';
-
-const USERS_KEY = 'awt_users_v1';
-const SESSIONS_KEY = 'awt_sessions_v1';
-const MAINT_KEY = 'awt_maintenance_v1';
-
-function ensureAdmin(users) {
-  const admin = users.find(u => u.username === 'apdewinter');
-  if (!admin) {
-    users.push({ username: 'apdewinter', password: 'TremmersDash1', approved: true, isAdmin: true });
-  }
-}
+import { supabase } from './lib/supabaseClient';
 
 export default function App() {
   const [step, setStep] = useState('login');
   const [state, setState] = useState({});
-  const [users, setUsers] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [maintenanceLogs, setMaintenanceLogs] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
-      try {
-        const raw = localStorage.getItem(USERS_KEY);
-        const u = raw ? JSON.parse(raw) : [];
-        ensureAdmin(u);
-        setUsers(u);
-        localStorage.setItem(USERS_KEY, JSON.stringify(u));
-
-        const rawS = localStorage.getItem(SESSIONS_KEY);
-        setSessions(rawS ? JSON.parse(rawS) : []);
-
-        const rawM = localStorage.getItem(MAINT_KEY);
-        setMaintenanceLogs(rawM ? JSON.parse(rawM) : []);
-      } catch (error) {
-        console.error('Initialization error:', error);
-      } finally {
-        setIsInitialized(true);
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user) {
+        await setSignedInUser(data.session.user);
       }
+      setIsInitialized(true);
     };
 
     initializeApp();
   }, []);
-
-  useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    }
-  }, [users, isInitialized]);
-
-  useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
-    }
-  }, [sessions, isInitialized]);
-
-  useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem(MAINT_KEY, JSON.stringify(maintenanceLogs));
-    }
-  }, [maintenanceLogs, isInitialized]);
 
   const go = (next, patch = {}) => {
     setState(s => ({ ...s, ...patch }));
     setStep(next);
   };
 
-  async function registerUser({ username, password }) {
-    if (users.find(u => u.username === username)) {
-      return { ok: false, message: 'Username exists' };
-    }
-    const u = { username, password, approved: true, isAdmin: false };
-    setUsers(prev => [...prev, u]);
+  async function setSignedInUser(user) {
+    setCurrentUser(user);
 
-    try {
-      await supabase.from('app_users').upsert({ username });
-    } catch (err) {
-      console.warn('Supabase upsert failed', err);
-    }
+    const { data } = await supabase
+      .from('profiles')
+      .select('username, approved, is_admin')
+      .eq('id', user.id)
+      .maybeSingle();
 
+    setProfile(data || null);
+    setStep('function');
+  }
+
+  async function registerUser({ email, password }) {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) return { ok: false, message: error.message };
+    // User will confirm email; after confirmation Supabase profile can be synced if needed
     return { ok: true };
   }
 
-  function loginUser({ username, password }) {
-    const u = users.find(x => x.username === username && x.password === password);
-    if (!u) return { ok: false, message: 'Invalid credentials' };
-    
-    setCurrentUser(u);
-    return { ok: true, user: u };
+  async function loginUser({ email, password }) {
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { ok: false, message: error.message };
+    await setSignedInUser(data.user);
+    return { ok: true, user: data.user };
   }
 
-  function logout() {
+  async function logout() {
+    await supabase.auth.signOut();
     setCurrentUser(null);
+    setProfile(null);
     setStep('login');
   }
 
@@ -108,8 +72,8 @@ export default function App() {
     setSessions(prev => [record, ...prev]);
 
     try {
-      await supabase.from('work_sessions').insert({
-        username: currentUser?.username,
+      await supabase.from('sessions').insert({
+        user_id: currentUser?.id,
         function: record.function,
         machine: record.machine,
         boat: record.boat,
@@ -123,11 +87,23 @@ export default function App() {
     }
   }
 
-  function saveMaintenance(record) {
+  async function saveMaintenance(record) {
     setMaintenanceLogs(prev => [record, ...prev]);
+
+    try {
+      await supabase.from('maintenance').insert({
+        user_id: currentUser?.id,
+        machine: record.machine,
+        options: record.options,
+        ts: record.ts
+      });
+    } catch (err) {
+      console.warn('Supabase maintenance insert failed', err);
+    }
   }
 
-  const isAdmin = currentUser && currentUser.isAdmin;
+  const displayName = profile?.username || currentUser?.email;
+  const isAdmin = Boolean(profile?.is_admin);
 
   if (!isInitialized) {
     return (
@@ -144,11 +120,7 @@ export default function App() {
     <div className="app-container min-h-screen bg-gray-50">
       {!currentUser ? (
         <Login
-          onLogin={(creds) => {
-            const res = loginUser(creds);
-            if (res.ok) setStep('function');
-            return res;
-          }}
+          onLogin={(creds) => loginUser(creds)}
           onRegister={(creds) => registerUser(creds)}
         />
       ) : (
@@ -157,13 +129,13 @@ export default function App() {
             <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <img 
-                  src="/images/alpha-logo.jpg" 
+                  src="/images/alpha-logo.png" 
                   alt="Alpha" 
                   className="h-10 w-10 rounded-full"
                 />
                 <div>
                   <h1 className="text-lg font-medium text-gray-900">Alpha Work Tracker</h1>
-                  <p className="text-sm text-gray-500">Welcome, {currentUser.username}</p>
+                  <p className="text-sm text-gray-500">Welcome, {displayName}</p>
                 </div>
               </div>
               <nav className="flex space-x-4">
@@ -201,6 +173,8 @@ export default function App() {
             {step === 'function' && (
               <FunctionSelection
                 onSelect={(fn) => go('machine', { function: fn })}
+                onAdmin={() => go('admin')}
+                isAdmin={isAdmin}
               />
             )}
 
@@ -221,7 +195,7 @@ export default function App() {
 
             {step === 'session' && (
               <ActiveSession
-                sessionInfo={{ ...state, user: currentUser.username }}
+                sessionInfo={{ ...state, user: displayName }}
                 onSave={(rec) => saveSession(rec)}
                 onEnd={() => go('function')}
               />
@@ -229,7 +203,7 @@ export default function App() {
 
             {step === 'maintenance' && (
               <Maintenance
-                user={currentUser.username}
+                user={displayName}
                 onSave={(rec) => saveMaintenance(rec)}
                 onBack={() => go('function')}
               />
@@ -237,7 +211,6 @@ export default function App() {
 
             {step === 'admin' && isAdmin && (
               <AdminPanel
-                users={users}
                 sessions={sessions}
                 maintenance={maintenanceLogs}
                 onBack={() => go('function')}

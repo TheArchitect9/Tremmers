@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Pre-commit hook to scan for secrets using the Node script
+node scripts/prevent-commit-secrets.js
+RC=$?
+if [ $RC -ne 0 ]; then
+  echo "Commit blocked by secret scanner. Fix issues and try again."
+  exit $RC
+fi
+exit 0
