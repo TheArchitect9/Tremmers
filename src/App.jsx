@@ -12,23 +12,24 @@ const USERS_KEY = 'awt_users_v1';
 const SESSIONS_KEY = 'awt_sessions_v2';
 const MAINTENANCE_KEY = 'awt_maintenance_v2';
 const OFFLINE_QUEUE_KEY = 'awt_offline_queue_v1';
+const LANGUAGE_KEY = 'awt_language_v1';
 
 const copy = {
   nl: {
     home: 'Home',
     maintenance: 'Onderhoud',
-    owner: 'Eigenaar',
+    owner: 'Beheerder',
     logout: 'Uitloggen',
-    roleOwner: 'Eigenaar',
+    roleOwner: 'Beheerder',
     roleWorker: 'Medewerker',
     langLabel: 'English'
   },
   en: {
     home: 'Home',
     maintenance: 'Maintenance',
-    owner: 'Owner',
+    owner: 'Admin',
     logout: 'Log out',
-    roleOwner: 'Owner',
+    roleOwner: 'Admin',
     roleWorker: 'Worker',
     langLabel: 'Nederlands',
     invalidCredentials: 'Username or password is incorrect'
@@ -38,7 +39,8 @@ const copy = {
 export default function App() {
   const [step, setStep] = useState('login');
   const [state, setState] = useState({});
-  const [lang, setLang] = useState('nl');
+  const [lang, setLang] = useState(() => localStorage.getItem(LANGUAGE_KEY) || 'nl');
+  const [isLogoOpen, setIsLogoOpen] = useState(false);
   const [legacyUsers, setLegacyUsers] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [maintenanceLogs, setMaintenanceLogs] = useState([]);
@@ -46,6 +48,10 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(LANGUAGE_KEY, lang);
+  }, [lang]);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -265,6 +271,7 @@ export default function App() {
       ...record,
       user_id: currentUser?.id,
       username: displayName,
+      user_label: displayName,
       updated_at: new Date().toISOString()
     };
 
@@ -319,11 +326,12 @@ export default function App() {
               <div className="flex min-w-0 items-center gap-3">
                 <img 
                   src="/images/alpha-logo.png" 
-                  alt="Alpha" 
-                  className="h-11 w-11 shrink-0 rounded-2xl object-cover shadow-md"
+                  alt="AlphasWeb" 
+                  className="h-11 w-11 shrink-0 cursor-pointer rounded-2xl object-cover shadow-md"
+                  onClick={() => setIsLogoOpen(true)}
                 />
                 <div className="min-w-0">
-                  <h1 className="truncate text-base font-bold text-slate-950 sm:text-lg">Alpha Work Tracker</h1>
+                  <h1 className="truncate text-base font-bold text-slate-950 sm:text-lg">AlphasWeb</h1>
                   <p className="truncate text-sm text-slate-500">{isOwner ? t('roleOwner') : t('roleWorker')} - {displayName}</p>
                 </div>
               </div>
@@ -426,6 +434,19 @@ export default function App() {
           </main>
 
         </>
+      )}
+      {isLogoOpen && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-slate-950/75 p-4 backdrop-blur"
+          onClick={() => setIsLogoOpen(false)}
+        >
+          <div className="glass-panel max-w-sm rounded-[2rem] p-5" onClick={e => e.stopPropagation()}>
+            <img src="/images/alpha-logo.png" alt="AlphasWeb" className="mx-auto h-64 w-64 rounded-[2rem] object-contain" />
+            <button onClick={() => setIsLogoOpen(false)} className="mt-4 w-full rounded-2xl bg-slate-950 py-3 font-semibold text-white">
+              {lang === 'en' ? 'Close' : 'Sluiten'}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

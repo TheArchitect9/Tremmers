@@ -72,6 +72,7 @@ create table if not exists active_sessions (
   local_id text primary key,
   user_id uuid references profiles(id) on delete cascade,
   username text,
+  user_label text,
   function text,
   machine text,
   boat text,

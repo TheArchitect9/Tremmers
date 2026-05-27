@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { getFunctionLabel } from '../utils/functionLabels'
 
 function formatDuration(ms = 0, lang = 'nl') {
   const hours = Math.floor(ms / 3600000)
@@ -25,7 +26,7 @@ function downloadCsv(rows) {
 const copy = {
   nl: {
     back: 'Terug naar app',
-    badge: 'Eigenaar',
+    badge: 'Beheerder',
     title: 'Live inzicht in iedereen die werkt.',
     subtitle: 'Zie wie bezig is, wat er is afgerond, waar onderhoud speelt en exporteer registraties wanneer je wilt.',
     export: 'Exporteer CSV',
@@ -36,7 +37,7 @@ const copy = {
     maintenance: 'Onderhoud',
     approved: 'goedgekeurd',
     waiting: 'wacht',
-    owner: 'eigenaar',
+    owner: 'beheerder',
     noUsers: 'Nog geen gebruikers gevonden.',
     activeTitle: 'Live werkzaamheden',
     noActive: 'Niemand is nu actief bezig.',
@@ -54,7 +55,7 @@ const copy = {
   },
   en: {
     back: 'Back to app',
-    badge: 'Owner',
+    badge: 'Admin',
     title: 'Live insight into everyone at work.',
     subtitle: 'See who is active, what was completed, where maintenance is happening, and export logs whenever needed.',
     export: 'Export CSV',
@@ -65,7 +66,7 @@ const copy = {
     maintenance: 'Maintenance',
     approved: 'approved',
     waiting: 'waiting',
-    owner: 'owner',
+    owner: 'admin',
     noUsers: 'No users found yet.',
     activeTitle: 'Live work',
     noActive: 'No one is active right now.',
@@ -196,7 +197,7 @@ export default function AdminPanel({ sessions: localSessions = [], maintenance =
                       {s.status === 'paused' ? t.statusPaused : t.statusActive}
                     </span>
                   </div>
-                  <div className="mt-2 text-sm text-slate-500">{s.function || '-'} - {s.machine || '-'} - {s.boat || '-'}</div>
+                  <div className="mt-2 text-sm text-slate-500">{getFunctionLabel(s.function, lang)} - {s.machine || '-'} - {s.boat || '-'}</div>
                   <div className="mt-1 text-sm font-semibold text-slate-700">{t.hold}: {s.hold || '-'}</div>
                   <div className="mt-2 text-xs text-slate-400">{s.updated_at ? new Date(s.updated_at).toLocaleTimeString() : ''}</div>
                 </div>
@@ -213,7 +214,7 @@ export default function AdminPanel({ sessions: localSessions = [], maintenance =
             {sessions.map(s => (
               <div key={s.id} className="tap-card p-4">
                 <div className="text-fit font-bold text-slate-950">{nameFor(s.user_id || s.user)} - {s.machine || '-'} - {t.hold} {s.hold || '-'}</div>
-                <div className="mt-1 text-sm text-slate-500">{s.function || '-'} - {s.boat || '-'}</div>
+                <div className="mt-1 text-sm text-slate-500">{getFunctionLabel(s.function, lang)} - {s.boat || '-'}</div>
                 <div className="mt-3 text-xs font-semibold text-slate-400">{s.start ? new Date(s.start).toLocaleString() : ''}</div>
               </div>
             ))}
@@ -236,7 +237,7 @@ export default function AdminPanel({ sessions: localSessions = [], maintenance =
                 {sessions.map(s => (
                   <tr key={s.id} className="border-t">
                     <td className="p-3">{nameFor(s.user_id || s.user)}</td>
-                    <td className="p-3">{s.function}</td>
+                    <td className="p-3">{getFunctionLabel(s.function, lang)}</td>
                     <td className="p-3">{s.machine}</td>
                     <td className="p-3">{s.boat}</td>
                     <td className="p-3">{s.hold}</td>

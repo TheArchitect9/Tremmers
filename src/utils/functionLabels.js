@@ -8,12 +8,12 @@ export const FUNCTION_LABELS = {
     'trimmer-3': '3e Tremmer'
   },
   en: {
-    'tremmer-1': 'First Trimmer',
-    'tremmer-2': 'Second Trimmer',
-    'tremmer-3': 'Third Trimmer',
-    'trimmer-1': 'First Trimmer',
-    'trimmer-2': 'Second Trimmer',
-    'trimmer-3': 'Third Trimmer'
+    'tremmer-1': '1st Tremmer',
+    'tremmer-2': '2nd Tremmer',
+    'tremmer-3': '3rd Tremmer',
+    'trimmer-1': '1st Tremmer',
+    'trimmer-2': '2nd Tremmer',
+    'trimmer-3': '3rd Tremmer'
   }
 }
 

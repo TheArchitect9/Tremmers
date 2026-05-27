@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 
 const copy = {
   nl: {
-    badge: 'Alpha Work Tracker',
+    badge: 'AlphasWeb',
     title: 'Rustiger inloggen. Sneller aan het werk.',
     subtitle: 'Log veilig in en ga direct door naar je werkdag.',
     cardTitle: 'Login',
-    cardSubtitle: 'Eigenaar en medewerkers gebruiken hetzelfde scherm.',
+    cardSubtitle: 'Beheerder en medewerkers gebruiken hetzelfde scherm.',
     identifier: 'E-mail of gebruikersnaam',
     password: 'Wachtwoord',
     login: 'Log in',
@@ -20,11 +20,11 @@ const copy = {
     tiles: ['Shift starten', 'Ruim sluiten', 'Onderhoud melden']
   },
   en: {
-    badge: 'Alpha Work Tracker',
+    badge: 'AlphasWeb',
     title: 'Cleaner sign-in. Faster shifts.',
     subtitle: 'Sign in securely and continue straight to your workday.',
     cardTitle: 'Sign in',
-    cardSubtitle: 'Owner and workers use the same screen.',
+    cardSubtitle: 'Admins and workers use the same screen.',
     identifier: 'Email or username',
     password: 'Password',
     login: 'Sign in',

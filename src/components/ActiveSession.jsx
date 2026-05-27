@@ -12,10 +12,11 @@ const copy = {
     hold: 'Ruimnummer',
     holdPlaceholder: 'Vul ruimnummer in',
     startSession: 'Start sessie',
-    closeHold: 'Sluit ruim',
+    closeHold: 'Sluit',
     pause: 'Pauze',
     continue: 'Verder werken',
-    endSession: 'Stop sessie',
+    endSession: 'Einde sessie',
+    ended: 'Sessie beeindigd',
     holdRequired: 'Vul eerst een ruimnummer in',
     notStarted: 'Sessie is nog niet gestart',
     recorded: 'Ruim gesloten en opgeslagen'
@@ -30,10 +31,11 @@ const copy = {
     hold: 'Hold number',
     holdPlaceholder: 'Enter hold number',
     startSession: 'Start session',
-    closeHold: 'Close hold',
-    pause: 'Break',
+    closeHold: 'Close',
+    pause: 'Pause',
     continue: 'Continue work',
     endSession: 'End session',
+    ended: 'Session ended',
     holdRequired: 'Enter a hold number first',
     notStarted: 'Session has not started',
     recorded: 'Hold closed and saved'
@@ -113,7 +115,7 @@ export default function ActiveSession({ sessionInfo = {}, onSave = () => {}, onA
     }
   }
 
-  function closeHold() {
+  function closeHold(showAlert = true) {
     if (!startedAt) return alert(t.notStarted)
     const end = Date.now()
     const duration = end - startedAt - accumulatedPause
@@ -136,12 +138,12 @@ export default function ActiveSession({ sessionInfo = {}, onSave = () => {}, onA
     setPaused(false)
     setPauseStart(null)
     setAccumulatedPause(0)
-    alert(t.recorded)
+    if (showAlert) alert(t.recorded)
   }
 
   function endSession() {
-    // close overall session and navigate back
-    if (startedAt) closeHold()
+    if (startedAt) closeHold(false)
+    alert(t.ended)
     onEnd()
   }
 

@@ -9,7 +9,7 @@ const functions = [
 
 const copy = {
   nl: {
-    ownerBadge: 'Eigenaarsoverzicht',
+    ownerBadge: 'Beheerdersoverzicht',
     workerBadge: 'Werkdag',
     ownerTitle: 'Alles in beeld, zonder zoeken.',
     workerTitle: name => `Klaar voor je shift${name ? `, ${name}` : ''}?`,
@@ -19,8 +19,13 @@ const copy = {
     service: 'Service',
     quickActions: 'Snelle acties',
     newHold: 'Nieuwe ruim starten',
-    ownerPanel: 'Open eigenaarspaneel',
+    ownerPanel: 'Open beheerderspaneel',
     lastEntry: 'Laatste registratie',
+    lastWorker: 'Medewerker',
+    lastMachine: 'Machine',
+    lastHold: 'Ruim',
+    lastStatus: 'Status',
+    completed: 'Afgesloten',
     noSessions: 'Nog geen sessies vandaag',
     activeNow: 'Nu bezig',
     start: 'Start',
@@ -32,7 +37,7 @@ const copy = {
     duration: (hours, minutes) => `${hours}u ${minutes}m`
   },
   en: {
-    ownerBadge: 'Owner overview',
+    ownerBadge: 'Admin overview',
     workerBadge: 'Workday',
     ownerTitle: 'Everything visible without searching.',
     workerTitle: name => `Ready for your shift${name ? `, ${name}` : ''}?`,
@@ -42,8 +47,13 @@ const copy = {
     service: 'Service',
     quickActions: 'Quick actions',
     newHold: 'Start new hold',
-    ownerPanel: 'Open owner panel',
+    ownerPanel: 'Open admin panel',
     lastEntry: 'Latest entry',
+    lastWorker: 'Worker',
+    lastMachine: 'Machine',
+    lastHold: 'Hold',
+    lastStatus: 'Status',
+    completed: 'Completed',
     noSessions: 'No sessions today yet',
     activeNow: 'Active now',
     start: 'Start',
@@ -77,6 +87,8 @@ export default function FunctionSelection({
   const todaysSessions = sessions.filter(s => s.start && new Date(s.start).toDateString() === today)
   const totalMs = todaysSessions.reduce((sum, s) => sum + (s.duration_ms || 0), 0)
   const lastSession = sessions[0]
+  const lastActive = activeSessions[0]
+  const latest = lastActive || lastSession
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-5 sm:space-y-6">
@@ -149,9 +161,16 @@ export default function FunctionSelection({
 
           <div className="mt-5 rounded-2xl bg-white p-4 shadow-sm">
             <div className="text-xs font-semibold uppercase text-slate-400">{t.lastEntry}</div>
-            <div className="text-fit mt-2 text-sm font-semibold text-slate-900">
-              {lastSession ? `${lastSession.machine || '-'} - ${lastSession.hold || '-'}` : t.noSessions}
-            </div>
+            {latest ? (
+              <div className="mt-3 grid gap-2 text-sm">
+                <div><span className="font-semibold text-slate-500">{t.lastWorker}:</span> <span className="text-fit font-bold text-slate-950">{latest.username || latest.user || latest.user_id || '-'}</span></div>
+                <div><span className="font-semibold text-slate-500">{t.lastMachine}:</span> <span className="font-bold text-slate-950">{latest.machine || '-'}</span></div>
+                <div><span className="font-semibold text-slate-500">{t.lastHold}:</span> <span className="font-bold text-slate-950">{latest.hold || '-'}</span></div>
+                <div><span className="font-semibold text-slate-500">{t.lastStatus}:</span> <span className="font-bold text-slate-950">{lastActive ? t.activeNow : t.completed}</span></div>
+              </div>
+            ) : (
+              <div className="text-fit mt-2 text-sm font-semibold text-slate-900">{t.noSessions}</div>
+            )}
           </div>
         </aside>
       </section>

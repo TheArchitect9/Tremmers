@@ -7,8 +7,8 @@ const copy = {
     boat: 'Bootnaam',
     boatPlaceholder: 'Bootnaam',
     location: 'Locatie',
-    west: 'West boot',
-    east: 'Oost boot',
+    west: 'West Boot',
+    east: 'Oost Boot',
     continue: 'Verder'
   },
   en: {
@@ -17,8 +17,8 @@ const copy = {
     boat: 'Vessel name',
     boatPlaceholder: 'Vessel name',
     location: 'Location',
-    west: 'West vessel',
-    east: 'East vessel',
+    west: 'West Boat',
+    east: 'East Boat',
     continue: 'Continue'
   }
 }
